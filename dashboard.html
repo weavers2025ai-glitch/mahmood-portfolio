@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mahmood — Site Dashboard</title>
+<style>
+:root{--org:#FF9E00;--ink:#211A12;--cream:#F5F2E8;--body:#5c5344}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--cream);color:var(--ink)}
+.wrap{max-width:980px;margin:0 auto;padding:24px 18px 60px}
+h1{font-size:28px} h2{font-size:20px;margin-bottom:14px}
+.card{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:22px;margin-top:18px}
+label{display:block;font-weight:700;font-size:13.5px;margin:14px 0 6px}
+input[type=text],input[type=password],textarea,select{width:100%;padding:11px 13px;border:2px solid #d8cfba;border-radius:9px;font:inherit;background:#fff}
+textarea{min-height:84px;resize:vertical}
+.btn{background:var(--org);border:2px solid var(--ink);color:var(--ink);font-weight:800;padding:11px 22px;border-radius:99px;cursor:pointer;font-size:15px}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.small{padding:7px 14px;font-size:13px}
+.btn.red{background:#e5484d;color:#fff;border-color:#e5484d}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.tab{border:2px solid var(--ink);background:#fff;border-radius:99px;padding:9px 18px;font-weight:800;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--cream)}
+.panel{display:none}.panel.on{display:block}
+.row{border:2px solid #eee3d2;border-radius:12px;padding:16px;margin-top:14px;background:#fff}
+.row img.thumb{width:74px;height:74px;object-fit:cover;border-radius:10px;border:2px solid #eee3d2}
+.flex{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.grow{flex:1;min-width:220px}
+.note{background:#fff7e8;border:2px solid var(--org);border-radius:10px;padding:13px 16px;font-size:14px;margin-top:16px;line-height:1.55}
+#login{max-width:420px;margin:9vh auto;text-align:center}
+.saved{color:#1a7f37;font-weight:800;margin-top:10px;display:none}
+.pv{max-width:100%;border-radius:10px;border:2px solid #eee3d2;margin-top:8px}
+</style></head><body>
+
+<div id="login" class="wrap">
+  <div class="card">
+    <h1>🔒 Site Dashboard</h1>
+    <p style="margin-top:8px;color:var(--body)">Mahmood Portfolio — password likhein</p>
+    <label style="text-align:left">Password</label>
+    <input type="password" id="pw" placeholder="•••••••">
+    <p id="pwerr" style="color:#e5484d;font-weight:700;display:none;margin-top:8px">Ghalat password — dobara try karein</p>
+    <button class="btn" style="margin-top:18px;width:100%" onclick="doLogin()">Login</button>
+  </div>
+</div>
+
+<div id="app" class="wrap" style="display:none">
+  <div class="flex" style="align-items:center;justify-content:space-between">
+    <h1>⚙️ Portfolio Dashboard</h1>
+    <div><a class="btn small dark" href="index.html" style="text-decoration:none">Site Dekhein →</a>
+    <button class="btn small" onclick="logout()">Logout</button></div>
+  </div>
+  <div class="note">Is panel se ki gayi tabdeelian <b>isi browser mein save</b> hoti hain aur site par foran nazar aati hain. Agar tabdeeli <b>sab ke liye permanent</b> karni ho to neeche <b>Backup</b> se Export karke file mujhe (Dodo Bhai ko) bhej dein — main site mein hamesha ke liye laga dunga.</div>
+
+  <div class="tabs">
+    <button class="tab on" data-p="texts">Texts</button>
+    <button class="tab" data-p="photos">Photos</button>
+    <button class="tab" data-p="items">Portfolio Items</button>
+    <button class="tab" data-p="testi">Testimonials</button>
+    <button class="tab" data-p="contact">Pricing &amp; Contact</button>
+    <button class="tab" data-p="backup">Backup</button>
+  </div>
+
+  <div class="panel on" id="p-texts"><div class="card">
+    <h2>Site ke Texts</h2>
+    <label>Hero — Naam (bara heading)</label><input type="text" id="t-heroName">
+    <label>Hero — Neeche wali line</label><input type="text" id="t-heroSub">
+    <label>About — Pehla paragraph</label><textarea id="t-aboutText"></textarea>
+    <button class="btn" style="margin-top:18px" onclick="saveAll()">Save Kar dein</button><span class="saved">✔ Save ho gaya</span>
+  </div></div>
+
+  <div class="panel" id="p-photos"><div class="card">
+    <h2>Photos Badlein (PC se upload)</h2>
+    <label>Hero Photo</label><input type="file" id="f-hero" accept="image/*"><img class="pv" id="pv-hero" style="display:none">
+    <label>About Photo</label><input type="file" id="f-about" accept="image/*"><img class="pv" id="pv-about" style="display:none">
+    <p style="font-size:13.5px;color:var(--body);margin-top:10px">Jo bhi size ki image hogi, wo khud site ke frame ke mutabiq set ho jayegi.</p>
+    <button class="btn" style="margin-top:14px" onclick="saveAll()">Save Kar dein</button><span class="saved">✔ Save ho gaya</span>
+  </div></div>
+
+  <div class="panel" id="p-items"><div class="card">
+    <h2>Portfolio mein Naya Kaam Add karein</h2>
+    <label>Title</label><input type="text" id="i-title" placeholder="e.g. New Logo Design">
+    <label>Category</label><select id="i-cat">
+      <option value="logo">Logo Design</option><option value="branding">Branding &amp; Ads</option>
+      <option value="social">Social Media</option><option value="packaging">Packaging</option>
+      <option value="print">Print &amp; Marketing</option><option value="outdoor">Outdoor</option>
+      <option value="threed">3D &amp; Motion</option><option value="web">Web Design</option></select>
+    <label>Image (PC se upload)</label><input type="file" id="i-file" accept="image/*"><img class="pv" id="pv-item" style="display:none">
+    <button class="btn" style="margin-top:14px" onclick="addItem()">+ Add Kar dein</button><span class="saved">✔ Save ho gaya</span>
+    <div id="items-list"></div>
+  </div></div>
+
+  <div class="panel" id="p-testi"><div class="card">
+    <h2>Testimonials (Clients ke Comments)</h2>
+    <div id="testi-list"></div>
+    <button class="btn" style="margin-top:16px" onclick="addTesti()">+ Naya Comment Add karein</button>
+    <button class="btn dark" style="margin-top:16px" onclick="saveAll()">Save Kar dein</button><span class="saved">✔ Save ho gaya</span>
+  </div></div>
+
+  <div class="panel" id="p-contact"><div class="card">
+    <h2>Pricing</h2>
+    <label>Hourly Rate</label><input type="text" id="t-priceHourly">
+    <label>Monthly Rate</label><input type="text" id="t-priceMonthly">
+    <button class="btn" style="margin-top:18px" onclick="saveAll()">Save Kar dein</button><span class="saved">✔ Save ho gaya</span>
+    <p class="note">Contact numbers aur email footer/contact page mein hain — unhein badalna ho to mujhe bata dein, main site mein set kar dunga. WhatsApp: +92 316 900 1195 · Dubai: +971 55 573 9965</p>
+  </div></div>
+
+  <div class="panel" id="p-backup"><div class="card">
+    <h2>Backup &amp; Reset</h2>
+    <p style="color:var(--body);line-height:1.6">Export se saari tabdeelian aik file mein download ho jati hain — wo file mujhe bhej dein to main unhein site mein permanent kar dunga. Import se purani file wapas load ho jati hai. Reset se saari tabdeelian khatam aur site asal halat mein wapas aa jati hai.</p>
+    <div class="flex" style="margin-top:16px">
+      <button class="btn" onclick="exportData()">⬇ Export Backup</button>
+      <label class="btn dark" style="margin:0;cursor:pointer">⬆ Import Backup<input type="file" id="imp" accept=".json" style="display:none"></label>
+      <button class="btn red" onclick="if(confirm('Saari tabdeelian khatam kar dein?')){localStorage.removeItem(KEY);location.reload();}">Reset All</button>
+    </div>
+  </div></div>
+</div>
+
+<script>
+const KEY = 'mahmood_admin_v1', PASS = '9001195';
+const DEFAULT_TESTI = [
+ ["5.0","Mahmood redesigned our complete packaging range and the response changed from the very first month. The designs feel premium, printing was flawless, and every file came exactly as the printer needed.","Ahmed Raza","Owner, Food Brand","img/avatar1.jpg"],
+ ["4.9","Our social media finally looks like one brand. Posts, campaigns, sale banners — everything is consistent, and customers recognise us before they even read the name.","Fatima Noor","Owner, Online Boutique","img/avatar2.jpg"],
+ ["5.0","From my salon logo to the price-list cards and Instagram posts, everything matches beautifully. Clients keep asking who designs our pages.","Sana Malik","Owner, Beauty Salon","img/avatar3.jpg"],
+ ["4.8","He understood the luxury feel we wanted for our perfume brand in the first meeting. The bottle labels and boxes look like an international brand now.","Omar Farooq","Director, Perfume Brand","img/avatar4.jpg"],
+ ["4.9","Our cafe menu, posters and delivery packaging were all done by Mahmood. Sales of our takeaway items visibly went up after the new look.","Hira Shahid","Owner, Cafe & Bakery","img/avatar5.jpg"],
+ ["5.0","The clothing brand identity he built for us — logo, tags, shopping bags, lookbook — is exactly the premium image I dreamed of for my label.","Ayesha Khan","Founder, Clothing Brand","img/avatar6.jpg"],
+ ["4.9","Professional, punctual and honest about timelines. Our project brochures and hoardings brought us serious buyers. I recommend him to every developer I know.","Kamran Iqbal","CEO, Real Estate Company","img/avatar7.jpg"],
+ ["4.9","Fast, honest and seriously creative. From our logo to the storefront branding, he handled everything and explained every choice. It feels like having an in-house design team.","Ali Hassan","Manager, E-Commerce Store","img/avatar8.jpg"],
+ ["5.0","Every fashion shoot poster and sale campaign is delivered on time and looks stunning. Our followers doubled after he took over our social designs.","Maryam Siddiqui","Owner, Fashion Studio","img/avatar9.jpg"],
+ ["4.8","He designed our restaurant branding, menus and outdoor signage. Guests photograph our wall branding and post it — free marketing for us.","Bilal Sheikh","Owner, Restaurant Chain","img/avatar10.jpg"],
+ ["5.0","He made my bakery's logo, boxes and Instagram look so sweet and professional. Orders from Instagram grew a lot after the rebrand.","Rabia Aslam","Founder, Home Bakery","img/avatar11.jpg"],
+ ["4.8","Our shop's sale banners and social posts come from Mahmood every month. The designs are bold, clear and always ready before the sale starts.","Naveed Akhtar","Owner, Mobile & Electronics Shop","img/avatar12.jpg"],
+ ["4.9","From hang tags to the full Eid campaign, everything carries the same elegant style. My customers notice the difference.","Mahnoor Fatima","Owner, Ladies Garments","img/avatar13.jpg"],
+ ["4.8","Product catalogues and packaging for our auto parts line — clean, technical and print-perfect. Dealers across Pakistan use his catalogues.","Imran Yousaf","Director, Auto Parts Brand","img/avatar14.jpg"],
+ ["4.9","Tour packages, posters and Facebook ads — all handled by one person, on time. Our holiday campaigns looked better than big agencies' work.","Amina Tariq","Manager, Travel Agency","img/avatar15.jpg"]];
+let A = {};
+try { A = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { A = {}; }
+A.texts = A.texts || {}; A.photos = A.photos || {}; A.items = A.items || [];
+A.testi = (A.testi && A.testi.length) ? A.testi : JSON.parse(JSON.stringify(DEFAULT_TESTI));
+let pendingItemImg = '';
+
+function doLogin() { if (document.getElementById('pw').value === PASS) { sessionStorage.setItem('mahmood_admin_ok', '1'); showApp(); } else document.getElementById('pwerr').style.display = 'block'; }
+function logout() { sessionStorage.removeItem('mahmood_admin_ok'); location.reload(); }
+function showApp() { document.getElementById('login').style.display = 'none'; document.getElementById('app').style.display = 'block'; fillForms(); }
+if (sessionStorage.getItem('mahmood_admin_ok')) showApp();
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on')); t.classList.add('on');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('p-' + t.dataset.p).classList.add('on'); });
+
+function fillForms() {
+  const T = A.texts;
+  set('t-heroName', T.heroName || 'Syed Mahmood Shah');
+  set('t-heroSub', T.heroSub || 'Graphic Designer based in Pakistan');
+  set('t-aboutText', T.aboutText || '');
+  set('t-priceHourly', T.priceHourly || '$25');
+  set('t-priceMonthly', T.priceMonthly || '$2,500');
+  if (A.photos.hero) { const p = document.getElementById('pv-hero'); p.src = A.photos.hero; p.style.display = 'block'; }
+  if (A.photos.about) { const p = document.getElementById('pv-about'); p.src = A.photos.about; p.style.display = 'block'; }
+  renderItems(); renderTesti();
+}
+function set(id, v) { document.getElementById(id).value = v; }
+function get(id) { return document.getElementById(id).value.trim(); }
+
+function readImage(file, cb) { if (!file) return; const r = new FileReader();
+  r.onload = () => { const img = new Image(); img.onload = () => {
+    const max = 1000, sc = Math.min(1, max / img.width);
+    const cv = document.createElement('canvas'); cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); cb(cv.toDataURL('image/jpeg', 0.85)); }; img.src = r.result; };
+  r.readAsDataURL(file); }
+document.getElementById('f-hero').onchange = e => readImage(e.target.files[0], d => { A.photos.hero = d; const p = document.getElementById('pv-hero'); p.src = d; p.style.display = 'block'; });
+document.getElementById('f-about').onchange = e => readImage(e.target.files[0], d => { A.photos.about = d; const p = document.getElementById('pv-about'); p.src = d; p.style.display = 'block'; });
+document.getElementById('i-file').onchange = e => readImage(e.target.files[0], d => { pendingItemImg = d; const p = document.getElementById('pv-item'); p.src = d; p.style.display = 'block'; });
+
+function addItem() { const t = get('i-title'); if (!t || !pendingItemImg) { alert('Title aur image dono zaroori hain'); return; }
+  A.items.push({ title: t, cat: document.getElementById('i-cat').value, img: pendingItemImg });
+  pendingItemImg = ''; document.getElementById('i-title').value = ''; document.getElementById('pv-item').style.display = 'none';
+  saveAll(); renderItems(); }
+function renderItems() { const w = document.getElementById('items-list');
+  w.innerHTML = A.items.map((it, i) => '<div class="row flex"><img class="thumb" src="' + it.img + '"><div class="grow"><b>' + it.title + '</b><br><span style="color:var(--body)">' + it.cat + '</span></div><button class="btn small red" onclick="delItem(' + i + ')">Delete</button></div>').join('') || '<p style="margin-top:14px;color:var(--body)">Abhi admin se koi item add nahi hua.</p>'; }
+function delItem(i) { A.items.splice(i, 1); saveAll(); renderItems(); }
+
+function renderTesti() { const w = document.getElementById('testi-list');
+  w.innerHTML = A.testi.map((t, i) => '<div class="row"><div class="flex"><img class="thumb" src="' + t[4] + '" id="timg' + i + '"><div class="grow">' +
+    '<label>Naam</label><input type="text" id="tn' + i + '" value="' + t[2].replace(/"/g, '&quot;') + '">' +
+    '<label>Role / Business</label><input type="text" id="tr' + i + '" value="' + t[3].replace(/"/g, '&quot;') + '">' +
+    '<label>Rating</label><input type="text" id="ts' + i + '" value="' + t[0] + '">' +
+    '<label>Comment</label><textarea id="tt' + i + '">' + t[1] + '</textarea>' +
+    '<label>Photo badlein (PC se)</label><input type="file" accept="image/*" onchange="testiPhoto(' + i + ', this)">' +
+    '<div style="margin-top:12px"><button class="btn small red" onclick="delTesti(' + i + ')">Delete Comment</button></div>' +
+    '</div></div></div>').join(''); }
+function testiPhoto(i, inp) { readImage(inp.files[0], d => { A.testi[i][4] = d; document.getElementById('timg' + i).src = d; }); }
+function addTesti() { collectTesti(); A.testi.push(['5.0', 'Naya comment yahan likhein.', 'Client Name', 'Business', 'img/avatar1.jpg']); renderTesti(); }
+function delTesti(i) { collectTesti(); A.testi.splice(i, 1); renderTesti(); }
+function collectTesti() { A.testi = A.testi.map((t, i) => { const n = document.getElementById('tn' + i); if (!n) return t;
+  return [get('ts' + i) || t[0], get('tt' + i) || t[1], get('tn' + i) || t[2], get('tr' + i) || t[3], t[4]]; }); }
+
+function saveAll() { collectTesti();
+  A.texts.heroName = get('t-heroName'); A.texts.heroSub = get('t-heroSub'); A.texts.aboutText = get('t-aboutText');
+  A.texts.priceHourly = get('t-priceHourly'); A.texts.priceMonthly = get('t-priceMonthly');
+  try { localStorage.setItem(KEY, JSON.stringify(A)); } catch (e) { alert('Storage full hai — kuch bari images hata kar dobara try karein.'); return; }
+  document.querySelectorAll('.saved').forEach(x => { x.style.display = 'inline'; setTimeout(() => x.style.display = 'none', 2200); }); }
+
+function exportData() { const b = new Blob([JSON.stringify(A, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'mahmood-portfolio-admin-backup.json'; a.click(); }
+document.getElementById('imp').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+  r.onload = () => { try { A = JSON.parse(r.result); localStorage.setItem(KEY, JSON.stringify(A)); alert('Backup load ho gaya'); fillForms(); } catch (x) { alert('File sahi nahi hai'); } };
+  r.readAsText(f); };
+</script>
+</body></html>
